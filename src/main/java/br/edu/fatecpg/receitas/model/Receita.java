@@ -1,12 +1,7 @@
 package br.edu.fatecpg.receitas.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -24,7 +19,8 @@ public class Receita {
     private Integer quantidadePorcoes;
     @Column(name = "dificuldade")
     private String dificuldade;
-    @ElementCollection @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "ingredient")
     private List<String> ingredients;
 
@@ -40,5 +36,16 @@ public class Receita {
         this.quantidadePorcoes = servings;
         this.dificuldade = difficulty;
         this.ingredients = ingredients;
+    }
+
+    @Override
+    public String toString() {
+        return "\nid: " + id +
+                "\nName: " + name +
+                "\nTempo de preparo: " + tempoPreparoMinutos + "min" +
+                "\nTempo de COzimento: " + tempoCozimentoMinutos + "min" +
+                "\nPorções: " + quantidadePorcoes +
+                "\nDificuldade: " + dificuldade +
+                "\nIngredients: " + ingredients;
     }
 }

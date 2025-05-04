@@ -13,6 +13,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 @SpringBootApplication
@@ -31,23 +33,49 @@ public class SpringApiReceitasApplication implements CommandLineRunner {
 		int opcao;
 		boolean loop = true;
 
-		System.out.print("Informe o id da receita: ");
-		Integer id = entrada.nextInt();
-		String receitaJSON = ConsumoAPI.consultarReceita(id);
+		while(loop){
+			try {
+				System.out.println("O que deseja fazer: \n0 - Sair\n1 - Pesquisar Receita\n2 - Listar receitas salvas");
+				opcao = entrada.nextInt();
 
-		System.out.println("Receita: "+receitaJSON);
+				if (opcao == 0) {
+					System.out.println("Fechando programa!");
+					loop = false;
+				} else if (opcao == 1) {
+					System.out.print("Informe o id da receita: ");
+					Integer id = entrada.nextInt();
+					String receitaJSON = ConsumoAPI.consultarReceita(id);
 
-		try{
-			RecipeDTO receita = deserializar(receitaJSON);
-			System.out.println(receita);
+					entrada.nextLine();
 
-			Receita receita1 = new Receita(receita.getId(), receita.getName(), receita.getPrepTimeMinutes(), receita.getCookTimeMinutes(), receita.getServings(), receita.getDifficulty(), receita.getIngredients());
+					String escolha = "";
+					RecipeDTO receita = deserializar(receitaJSON);
+					System.out.println("Comida: " + receita.getName() + "\nDificuldade: " + receita.getDifficulty() +
+							"\nDeseja salvar essa receita? y/n: ");
+					escolha = entrada.nextLine();
 
-			repositorio.save(receita1);
-			
-		}catch(IOException e){
-			System.out.println("Erro ao buscar receita: "+e);
+					if (escolha.toLowerCase().equals("y")) {
+						Receita receita1 = new Receita(receita.getId(), receita.getName(), receita.getPrepTimeMinutes(), receita.getCookTimeMinutes(), receita.getServings(), receita.getDifficulty(), receita.getIngredients());
+						repositorio.save(receita1);
+						System.out.println("Receita salva no banco de dados com sucesso!");
+					} else if (escolha.toLowerCase().equals("n")) {
+						System.out.println("Ok receita ignorada, que tal ver outra receita?");
+					} else {
+						System.out.println("Desculpe não entendi, tente novamente");
+					}
+				} else if (opcao == 2) {
+					System.out.println("\nAqui estão suas receitas salvas\n");
+					List<Receita> receitaList = repositorio.findAll();
+					receitaList.forEach(System.out::println);
+				} else {
+					System.out.println("Opção inválida!");
+				}
+			}catch(IOException e){
+				System.out.println("Cuidado com as entradas de dados!");
+			}
 		}
+
+		entrada.close();
 	}
 
 	protected static RecipeDTO deserializar(String json) throws JsonProcessingException {
