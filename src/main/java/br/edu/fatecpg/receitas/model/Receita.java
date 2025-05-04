@@ -27,4 +27,18 @@ public class Receita {
     @ElementCollection @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "ingredient")
     private List<String> ingredients;
+
+    public Receita(){
+
+    }
+
+    public Receita(Integer id, String name, Integer prepTimeMinutes, Integer cookTimeMinutes, Integer servings, String difficulty, List<String> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.tempoPreparoMinutos = prepTimeMinutes;
+        this.tempoCozimentoMinutos = cookTimeMinutes;
+        this.quantidadePorcoes = servings;
+        this.dificuldade = difficulty;
+        this.ingredients = ingredients;
+    }
 }
